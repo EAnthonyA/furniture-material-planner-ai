@@ -1,6 +1,24 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { DrawingExtractionResult } from "@/components/drawing-extraction-result";
+import { AnalysisStatus } from "@/components/analysis-status";
+import { ManualPieceForm } from "@/components/manual-piece-form";
 import { prisma } from "@/lib/db/prisma";
+import { drawingExtractionSchema } from "@/lib/domain/drawing-extraction";
+
+const inProgressStatuses = new Set(["PENDING", "RUNNING"]);
+
+function getActivity(status: string, activity: string | null) {
+  if (activity) {
+    return activity;
+  }
+
+  if (status === "PENDING") {
+    return "Laukiame, kol galėsime pradėti jūsų brėžinių analizę";
+  }
+
+  return "Ruošiame jūsų brėžinių analizę";
+}
 
 export default async function AnalysisPage({
   params,
@@ -17,20 +35,18 @@ export default async function AnalysisPage({
     notFound();
   }
 
-  if (run.status === "PENDING" || run.status === "RUNNING") {
+  if (inProgressStatuses.has(run.status)) {
+    const activity = getActivity(run.status, run.activity);
+
     return (
       <main className="analysis-page">
-        <meta httpEquiv="refresh" content="3" />
         <p className="eyebrow">Brėžinio analizė</p>
         <h1>
           Skaitome
           <br />
           <em>brėžinį.</em>
         </h1>
-        <p className="drawing-lead">
-          Gemini analizuoja jūsų užrašytus matmenis ir konstrukcijos ženklus.
-          Šis puslapis atsinaujins automatiškai.
-        </p>
+        <AnalysisStatus activity={activity} />
       </main>
     );
   }
@@ -44,7 +60,9 @@ export default async function AnalysisPage({
           <br />
           <em>patikslinimo.</em>
         </h1>
-        <p className="form-error">{run.error}</p>
+        <p className="form-error">
+          {run.error || "Nepavyko nuskaityti brėžinių. Bandykite dar kartą."}
+        </p>
         <Link className="text-link" href={`/projects/${projectId}/drawings`}>
           Grįžti prie brėžinių
         </Link>
@@ -52,32 +70,45 @@ export default async function AnalysisPage({
     );
   }
 
-  const output = run.output as {
-    furnitureType?: string | null;
-    questions?: Array<{ prompt: string }>;
-  } | null;
+  const extraction = drawingExtractionSchema.safeParse(run.output);
+
+  if (!extraction.success) {
+    return (
+      <main className="analysis-page">
+        <p className="eyebrow">Brėžinio analizė</p>
+        <h1>
+          Atnaujinkite <em>analizę.</em>
+        </h1>
+        <p className="drawing-lead">
+          Šio rezultato formatas nebeatitinka brėžinio nuskaitymo žingsnio.
+          Atlikite analizę iš naujo.
+        </p>
+        <form action={`/api/projects/${projectId}/analysis`} method="post">
+          <button className="submit-button" type="submit">
+            Analizuoti iš naujo
+          </button>
+        </form>
+      </main>
+    );
+  }
+
   return (
     <main className="analysis-page">
       <p className="eyebrow">Analizė paruošta</p>
       <h1>
-        Peržiūrėkite
+        Patikrinkite
         <br />
-        <em>siūlymą.</em>
+        <em>matmenis.</em>
       </h1>
       <p className="drawing-lead">
-        Atpažinta: {output?.furnitureType || "nepatikslinta"}. Prieš
-        skaičiuojant medžiagas kiekvieną pasiūlymą dar reikės patvirtinti.
+        Rodomos tik plokštės, mediniai tašai bei lentos, du lankstai kiekvienoms
+        aiškiai matomoms durelėms ir reguliuojamos kojelės, jei jos pažymėtos.
+        Varžtų, vinių ir kitų pasiūlymų čia nėra.
       </p>
-      {output?.questions?.length ? (
-        <section className="drawing-list">
-          <p className="eyebrow">Klausimai</p>
-          <ul>
-            {output.questions.map((question, index) => (
-              <li key={index}>{question.prompt}</li>
-            ))}
-          </ul>
-        </section>
-      ) : null}
+      <ManualPieceForm
+        action={`/api/projects/${projectId}/analysis/${runId}/pieces`}
+      />
+      <DrawingExtractionResult extraction={extraction.data} />
       <Link className="text-link" href={`/projects/${projectId}/drawings`}>
         Peržiūrėti brėžinius
       </Link>

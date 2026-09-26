@@ -11,6 +11,7 @@ const uploadMessages: Record<string, string> = {
   complete: "Brėžiniai išsaugoti. Juos galėsite peržiūrėti prieš analizę.",
   "missing-file": "Pasirinkite bent vieną brėžinio failą.",
   "invalid-file": "Priimami JPEG, PNG ir WebP failai iki 20 MB.",
+  "invalid-context": "Komentaras gali būti ne ilgesnis nei 2 000 simbolių.",
   "too-many": "Viename projekte galima laikyti iki 10 brėžinių.",
 };
 
@@ -123,8 +124,8 @@ export default async function DrawingsPage({
               Analizuoti brėžinius <span aria-hidden="true">→</span>
             </button>
             <p>
-              Gemini pasiūlys konstrukciją ir klausimus; niekas nebus
-              patvirtinta automatiškai.
+              Gemini nuskaitys tik aiškiai prie stačiakampių parašytus matmenis.
+              Jis nieko neskaičiuos ir neinterpretuos konstrukcijos.
             </p>
           </form>
         ) : null}

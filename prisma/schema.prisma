@@ -114,6 +114,9 @@ model AnalysisRun {
   model         String
   promptVersion String
   schemaVersion String
+  ownerContext  String?
+  ownerAnswers  Json?
+  activity      String?
   output        Json?
   error         String?
   createdAt     DateTime  @default(now())

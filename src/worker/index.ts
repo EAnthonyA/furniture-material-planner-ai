@@ -23,7 +23,7 @@ async function processPendingRuns() {
 }
 
 void processPendingRuns();
-const poll = setInterval(() => void processPendingRuns(), 3_000);
+const poll = setInterval(() => void processPendingRuns(), 5_000);
 
 function stop(signal: NodeJS.Signals) {
   console.info(`Furniture planner worker received ${signal}; stopping.`);
