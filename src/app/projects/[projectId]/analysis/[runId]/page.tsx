@@ -105,10 +105,28 @@ export default async function AnalysisPage({
         aiškiai matomoms durelėms ir reguliuojamos kojelės, jei jos pažymėtos.
         Varžtų, vinių ir kitų pasiūlymų čia nėra.
       </p>
+      <form
+        action={`/api/projects/${projectId}/analysis/${runId}/purchase-plan`}
+        className="cutting-plan-form"
+        method="post"
+      >
+        <button className="submit-button cutting-plan-link" type="submit">
+          <span className="cutting-plan-link-copy">
+            <small>04 · Kitas žingsnis</small>
+            <strong>Sudaryti pirkimo planą</strong>
+          </span>
+          <span className="cutting-plan-link-arrow" aria-hidden="true">
+            →
+          </span>
+        </button>
+      </form>
       <ManualPieceForm
         action={`/api/projects/${projectId}/analysis/${runId}/pieces`}
       />
-      <DrawingExtractionResult extraction={extraction.data} />
+      <DrawingExtractionResult
+        action={`/api/projects/${projectId}/analysis/${runId}/pieces`}
+        extraction={extraction.data}
+      />
       <Link className="text-link" href={`/projects/${projectId}/drawings`}>
         Peržiūrėti brėžinius
       </Link>

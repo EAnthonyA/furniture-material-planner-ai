@@ -91,7 +91,10 @@ export default async function HomePage() {
           </span>
           <span>Dirbtuvės</span>
         </Link>
-        <p className="topbar-note">Medžiagų planas · v0.1</p>
+        <div className="topbar-links">
+          <Link href="/catalog">Katalogas</Link>
+          <p className="topbar-note">Medžiagų planas · v0.1</p>
+        </div>
       </header>
 
       <section className="masthead" aria-labelledby="page-title">

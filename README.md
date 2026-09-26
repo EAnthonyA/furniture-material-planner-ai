@@ -4,7 +4,7 @@ An owner-only furniture planning application for turning hand drawings into revi
 
 ## Current slice
 
-The repository now has a Next.js App Router foundation, responsive Lithuanian project-setup screen, typed project/AI boundaries, an initial PostgreSQL schema, local Docker Compose database, worker entry point, and a health route. Persistence, authentication, image upload, catalog imports, and the optimizer are the next implementation slices.
+The repository now has a Next.js App Router foundation, responsive Lithuanian project-setup screen, typed project/AI boundaries, an initial PostgreSQL schema, local Docker Compose database, worker entry point, and a Senukai catalogue importer. Authentication, image upload, and the optimizer are the next implementation slices.
 
 ## Run locally
 
@@ -17,6 +17,12 @@ The development command bind-mounts the source and runs Next.js in development m
 Use `docker compose up --build` when you specifically want to run the production-style standalone image.
 
 Run `pnpm db:generate`, `pnpm typecheck`, `pnpm test`, and `pnpm build` before merging changes. Prisma Client is generated into `src/generated/prisma` and is intentionally not committed.
+
+## Senukai material catalogue
+
+`pnpm catalog:senukai` imports the requested glued-wood-panel and rough-sawn-lumber catalogues into `StoreProduct`, then writes a timestamped `ProductObservation` for each card. It imports only products that are available and have a loyalty-card price; that loyalty price is the single stored price. It is safe to re-run: a product is identified by its Senukai product code and its current title, dimensions, species, and URL are refreshed; observations remain as price history.
+
+Senukai blocks ordinary automated requests, so the importer reads its publicly rendered catalogue cards through `r.jina.ai`. It records the canonical Senukai product URL and the raw card text, not the proxy URL, in the database.
 
 ## Analysis language and material context
 
