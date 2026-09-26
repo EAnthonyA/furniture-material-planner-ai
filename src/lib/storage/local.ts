@@ -1,4 +1,4 @@
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 const localStorageRoot =
@@ -34,5 +34,16 @@ export async function readPrivateObject(objectKey: string) {
       /* turbopackIgnore: true */ localStorageRoot,
       ...objectKey.split("/"),
     ),
+  );
+}
+
+export async function deletePrivateProject(projectId: string) {
+  await rm(
+    path.join(
+      /* turbopackIgnore: true */ localStorageRoot,
+      "projects",
+      projectId,
+    ),
+    { recursive: true, force: true },
   );
 }

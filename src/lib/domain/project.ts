@@ -30,3 +30,4 @@ export const createProjectInputSchema = z.object({
 });
 
 export type CreateProjectInput = z.infer<typeof createProjectInputSchema>;
+export type MaterialGroupInput = z.infer<typeof materialGroupInputSchema>;

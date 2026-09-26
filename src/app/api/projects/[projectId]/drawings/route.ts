@@ -72,5 +72,10 @@ export async function POST(
     });
   }
 
+  await prisma.project.update({
+    where: { id: projectId },
+    data: { state: "DRAFT" },
+  });
+
   return redirect(request, projectId, "complete");
 }
