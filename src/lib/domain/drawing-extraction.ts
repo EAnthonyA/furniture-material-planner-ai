@@ -8,6 +8,7 @@ export const observedPieceSchema = z.object({
   widthMm: z.number().positive().multipleOf(0.1).nullable(),
   heightMm: z.number().positive().multipleOf(0.1).nullable(),
 });
+export type ObservedPiece = z.infer<typeof observedPieceSchema>;
 
 /** A transcription of visible rectangles and their explicitly written dimensions. */
 export const drawingExtractionSchema = z.object({

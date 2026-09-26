@@ -93,6 +93,26 @@ a:focus-visible {
   font-size: 0.82rem;
   letter-spacing: 0.04em;
 }
+.topbar-links {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.topbar-links a,
+.catalogue-back-link {
+  min-height: 2.75rem;
+  display: inline-flex;
+  align-items: center;
+  color: var(--walnut);
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+.topbar-links a:hover,
+.catalogue-back-link:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
 
 .masthead {
   display: grid;
@@ -758,6 +778,221 @@ fieldset legend {
 .analysis-page > .drawing-lead {
   margin-bottom: 1.5rem;
 }
+
+.catalogue-page {
+  min-height: 100svh;
+}
+.catalogue-intro {
+  display: grid;
+  gap: 2rem;
+  padding: clamp(3.5rem, 9vw, 7rem) max(1.25rem, env(safe-area-inset-right))
+    clamp(2.5rem, 6vw, 5rem) max(1.25rem, env(safe-area-inset-left));
+  border-bottom: 1px solid var(--line);
+  background-color: color-mix(in oklch, var(--paper), var(--paper-deep) 35%);
+  background-image:
+    linear-gradient(
+      90deg,
+      transparent 0,
+      transparent calc(100% - 1px),
+      color-mix(in oklch, var(--line), transparent 45%) calc(100% - 1px)
+    ),
+    repeating-linear-gradient(
+      0deg,
+      transparent 0,
+      transparent 2.95rem,
+      color-mix(in oklch, var(--line), transparent 62%) 3rem
+    );
+  background-size:
+    min(11vw, 9rem) 100%,
+    100% 3rem;
+}
+.catalogue-intro h1 {
+  margin: 0;
+}
+.catalogue-intro-note {
+  align-self: end;
+  max-width: 36ch;
+  color: var(--ink-soft);
+  line-height: 1.65;
+}
+.catalogue-intro-note p:last-child {
+  margin-bottom: 0;
+}
+.catalogue-imported-at {
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+  color: var(--walnut);
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+.catalogue-ledger {
+  padding: clamp(2.25rem, 5vw, 4.5rem) max(1.25rem, env(safe-area-inset-right))
+    max(3rem, env(safe-area-inset-bottom))
+    max(1.25rem, env(safe-area-inset-left));
+}
+.catalogue-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1.25rem;
+  padding-bottom: 1.15rem;
+  border-bottom: 2px solid var(--ink);
+}
+.catalogue-summary p {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 0.88rem;
+}
+.catalogue-summary p:first-child {
+  margin-right: auto;
+  color: var(--ink);
+}
+.catalogue-summary strong {
+  color: var(--walnut);
+  font-family: var(--serif);
+  font-size: 1.6rem;
+  font-weight: 500;
+  line-height: 1;
+}
+.availability-dot {
+  display: inline-block;
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 50%;
+  background: var(--moss);
+}
+.availability-dot.is-sold-out {
+  background: var(--clay);
+}
+.catalogue-filters {
+  display: grid;
+  gap: 0.9rem;
+  margin: clamp(1.5rem, 4vw, 2.5rem) 0 1.25rem;
+}
+.catalogue-filters label {
+  display: grid;
+  gap: 0.4rem;
+  color: var(--ink-soft);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+.catalogue-filters input,
+.catalogue-filters select {
+  width: 100%;
+  min-height: 3rem;
+  padding: 0.55rem 0;
+  border: 0;
+  border-bottom: 1.5px solid var(--ink);
+  border-radius: 0;
+  background: transparent;
+  color: var(--ink);
+  font-size: 1rem;
+  letter-spacing: normal;
+  text-transform: none;
+}
+.catalogue-filters button {
+  min-height: 3rem;
+  align-self: end;
+  padding: 0.65rem 1.15rem;
+  border: 1px solid var(--walnut);
+  border-radius: 0;
+  background: var(--walnut);
+  color: var(--paper);
+  font-weight: 700;
+}
+.catalogue-filters button:hover {
+  background: var(--clay);
+}
+.catalogue-result-count {
+  margin-bottom: 0.7rem;
+  color: var(--ink-soft);
+  font-size: 0.86rem;
+}
+.catalogue-table-wrap {
+  border-top: 1px solid var(--line);
+}
+.catalogue-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+.catalogue-table th {
+  padding: 0.85rem 0.75rem 0.85rem 0;
+  color: var(--walnut);
+  font-size: 0.7rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+.catalogue-table td {
+  padding: 1rem 0.75rem 1rem 0;
+  border-top: 1px solid color-mix(in oklch, var(--line), transparent 25%);
+  vertical-align: top;
+  color: var(--ink-soft);
+  font-size: 0.88rem;
+}
+.catalogue-table td:first-child {
+  width: 34%;
+  color: var(--ink);
+  font-family: var(--serif);
+  font-size: 1.08rem;
+  line-height: 1.25;
+}
+.catalogue-table td:first-child a {
+  color: inherit;
+  text-decoration-color: color-mix(in oklch, var(--walnut), transparent 55%);
+  text-underline-offset: 0.18em;
+}
+.catalogue-table td:first-child a:hover {
+  color: var(--walnut);
+}
+.catalogue-price {
+  white-space: nowrap;
+}
+.catalogue-price strong {
+  display: block;
+  color: var(--ink);
+  font-family: var(--serif);
+  font-size: 1.15rem;
+  font-weight: 500;
+}
+.catalogue-price small,
+.catalogue-observed-at {
+  display: block;
+  margin-top: 0.18rem;
+  color: var(--ink-soft);
+  font-size: 0.73rem;
+}
+.availability-tag {
+  display: inline-block;
+  padding: 0.2rem 0.45rem;
+  background: color-mix(in oklch, var(--moss), transparent 85%);
+  color: color-mix(in oklch, var(--moss), var(--ink) 30%);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+.availability-tag.is-sold-out {
+  background: color-mix(in oklch, var(--clay), transparent 84%);
+  color: color-mix(in oklch, var(--clay), var(--ink) 30%);
+}
+.catalogue-empty {
+  padding: 3rem 0;
+  border-top: 1px solid var(--line);
+}
+.catalogue-empty h2 {
+  max-width: 18ch;
+  font-family: var(--serif);
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  font-weight: 500;
+}
+.catalogue-empty a {
+  color: var(--walnut);
+  font-weight: 700;
+}
 .analysis-status {
   min-height: 1.5em;
 }
@@ -792,6 +1027,75 @@ fieldset legend {
 .extraction-list strong small {
   font-family: inherit;
   font-size: 0.65em;
+}
+.piece-row {
+  display: block !important;
+}
+.piece-row-summary {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: baseline;
+  gap: 0.7rem 1rem;
+}
+.piece-row-summary > span {
+  color: var(--ink-soft);
+}
+.piece-edit-toggle,
+.piece-save-button {
+  min-height: 2.4rem;
+  padding: 0.4rem 0.65rem;
+  border: 1px solid var(--walnut);
+  border-radius: 0;
+  background: transparent;
+  color: var(--walnut);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+.piece-editor {
+  display: grid;
+  gap: 0.85rem;
+  margin-top: 0.9rem;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  background: color-mix(in oklch, var(--paper), white 24%);
+}
+.piece-editor-primary-fields,
+.piece-editor-dimensions {
+  display: grid;
+  grid-template-columns: 1fr 2fr minmax(5rem, 0.65fr);
+  gap: 0.7rem;
+}
+.piece-editor-dimensions {
+  grid-template-columns: repeat(3, 1fr);
+}
+.piece-editor label {
+  display: grid;
+  gap: 0.3rem;
+  color: var(--ink-soft);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.035em;
+}
+.piece-editor input,
+.piece-editor select {
+  width: 100%;
+  min-height: 2.55rem;
+  padding: 0.4rem 0;
+  border: 0;
+  border-bottom: 1.5px solid var(--ink);
+  border-radius: 0;
+  background: transparent;
+  color: var(--ink);
+}
+.piece-editor-note {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 0.82rem;
+}
+.piece-save-button {
+  justify-self: start;
+  background: var(--walnut);
+  color: var(--paper);
 }
 .unreadable-items {
   max-width: 42rem;
@@ -933,6 +1237,229 @@ fieldset legend {
   color: var(--walnut);
   font-weight: 700;
 }
+.cutting-plan-form {
+  margin-top: 0.25rem;
+}
+.cutting-plan-link {
+  display: inline-grid;
+  width: min(100%, 28rem);
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  min-height: 5.25rem;
+  margin: 0;
+  padding: 0.7rem 0.8rem 0.7rem 1rem;
+  border: 1.5px solid var(--walnut);
+  background: color-mix(in oklch, var(--paper), white 22%);
+  color: var(--walnut);
+  text-decoration: none;
+  transition:
+    background-color 150ms var(--ease-out),
+    color 150ms var(--ease-out),
+    transform 150ms var(--ease-out);
+}
+.cutting-plan-link-copy {
+  display: grid;
+  gap: 0.15rem;
+  text-align: left;
+}
+.cutting-plan-link-copy small {
+  color: var(--ink-soft);
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.cutting-plan-link-copy strong {
+  font-family: var(--serif);
+  font-size: 1.3rem;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+.submit-button .cutting-plan-link-arrow {
+  display: grid;
+  width: 2.75rem;
+  height: 2.75rem;
+  place-items: center;
+  border: 1px solid currentColor;
+  color: inherit;
+  font-size: 1.45rem;
+  font-weight: 400;
+  line-height: 1;
+}
+.submit-button.cutting-plan-link:hover {
+  background: var(--walnut);
+  color: oklch(94% 0.02 82);
+  transform: translateX(3px);
+}
+.cutting-plan-link:hover .cutting-plan-link-copy small {
+  color: color-mix(in oklch, oklch(94% 0.02 82), transparent 20%);
+}
+.cutting-plan-page {
+  max-width: 76rem;
+  padding: clamp(2.5rem, 8vw, 6rem) max(1.25rem, env(safe-area-inset-right))
+    max(3rem, env(safe-area-inset-bottom))
+    max(1.25rem, env(safe-area-inset-left));
+}
+.cutting-back {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  margin-bottom: clamp(2.5rem, 7vw, 5.5rem);
+  color: var(--walnut);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+.cutting-plan-page h1 {
+  margin-bottom: 1.4rem;
+}
+.cutting-page-lead {
+  max-width: 55ch;
+  margin-bottom: clamp(2.5rem, 5vw, 4rem);
+  color: var(--ink-soft);
+  font-size: 1.05rem;
+  line-height: 1.7;
+}
+.purchase-recommendation {
+  display: grid;
+  grid-template-columns: auto auto minmax(0, 1fr);
+  align-items: center;
+  gap: 0.45rem 1rem;
+  max-width: 64rem;
+  padding: 1.1rem 0 1.4rem;
+  border-top: 2px solid var(--ink);
+  border-bottom: 1px solid var(--ink);
+}
+.purchase-recommendation .eyebrow {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+.purchase-count {
+  margin: 0;
+  color: var(--walnut);
+  font-family: var(--serif);
+  font-size: clamp(2.4rem, 7vw, 4.5rem);
+  line-height: 0.85;
+}
+.purchase-count strong {
+  font-weight: 500;
+}
+.purchase-recommendation a {
+  color: var(--ink);
+  font-family: var(--serif);
+  font-size: clamp(1.2rem, 3vw, 1.7rem);
+  font-weight: 500;
+  line-height: 1.05;
+  text-decoration-color: color-mix(in oklch, var(--walnut), transparent 45%);
+  text-underline-offset: 0.18em;
+}
+.purchase-recommendation p:last-child {
+  margin: 0.4rem 0 0;
+  color: var(--ink-soft);
+  font-size: 0.85rem;
+}
+.cutting-proof-lead {
+  max-width: 55ch;
+  margin: 1.4rem 0 clamp(2.4rem, 6vw, 4.5rem);
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+}
+.cutting-sheets {
+  max-width: 64rem;
+}
+.cutting-sheets > .eyebrow {
+  margin-bottom: 1rem;
+}
+.cutting-sheet {
+  margin-top: 1.25rem;
+  border-top: 1px solid var(--line);
+}
+.cutting-sheet header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.85rem 0;
+}
+.cutting-sheet h2 {
+  font-size: clamp(1.45rem, 3vw, 2.1rem);
+}
+.cutting-sheet header p {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 0.8rem;
+}
+.cutting-sheet ol,
+.cutting-input ul,
+.cutting-alternatives ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.cutting-sheet ol {
+  border-top: 1px solid var(--line);
+}
+.cutting-sheet li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.15rem 1rem;
+  padding: 0.8rem 0;
+  border-bottom: 1px solid var(--line);
+}
+.cutting-sheet li > span {
+  color: var(--ink-soft);
+}
+.cutting-sheet li strong,
+.cutting-input li strong {
+  color: var(--walnut);
+  font-family: var(--serif);
+  font-size: 1.15rem;
+  font-weight: 500;
+}
+.cutting-sheet li small {
+  grid-column: 1 / -1;
+  color: var(--ink-soft);
+  font-size: 0.72rem;
+}
+.cutting-input,
+.cutting-alternatives,
+.cutting-empty {
+  max-width: 64rem;
+  margin-top: clamp(2.5rem, 6vw, 4.5rem);
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--line);
+}
+.cutting-input ul {
+  border-top: 1px solid var(--line);
+}
+.cutting-input li,
+.cutting-alternatives li {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.8rem 0;
+  border-bottom: 1px solid var(--line);
+}
+.cutting-input li > span,
+.cutting-alternatives span,
+.cutting-empty p:last-child {
+  color: var(--ink-soft);
+}
+.cutting-alternatives a {
+  color: var(--walnut);
+  font-weight: 700;
+}
+.cutting-alternatives span {
+  flex: none;
+  font-size: 0.85rem;
+}
+.cutting-empty h2 {
+  max-width: 22ch;
+  margin-bottom: 1rem;
+}
+.cutting-empty p:last-child {
+  max-width: 55ch;
+  line-height: 1.65;
+}
 
 @media (hover: hover) and (pointer: fine) {
   .material-option:hover {
@@ -944,6 +1471,70 @@ fieldset legend {
   }
 }
 @media (max-width: 41.99rem) {
+  .topbar-links {
+    gap: 0.6rem;
+  }
+  .topbar-links .topbar-note {
+    display: none;
+  }
+  .catalogue-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+  .catalogue-table,
+  .catalogue-table tbody,
+  .catalogue-table tr,
+  .catalogue-table td {
+    display: block;
+  }
+  .catalogue-table tr {
+    padding: 1.15rem 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .catalogue-table td,
+  .catalogue-table td:first-child {
+    width: auto;
+    padding: 0.2rem 0;
+    border: 0;
+    font-family: var(--sans);
+    font-size: 0.86rem;
+  }
+  .catalogue-table td:first-child {
+    margin-bottom: 0.7rem;
+    font-family: var(--serif);
+    font-size: 1.2rem;
+  }
+  .catalogue-table td:not(:first-child) {
+    display: grid;
+    grid-template-columns: 7.25rem minmax(0, 1fr);
+    gap: 0.7rem;
+  }
+  .catalogue-table td:not(:first-child)::before {
+    content: attr(data-label);
+    color: var(--ink-soft);
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+  }
+  .catalogue-price strong,
+  .catalogue-price small,
+  .catalogue-observed-at {
+    grid-column: 2;
+  }
+  .catalogue-price strong {
+    grid-row: 1;
+  }
+  .catalogue-price small {
+    grid-row: 2;
+  }
+  .catalogue-observed-at {
+    margin-top: 0.35rem;
+  }
   .manual-piece-heading {
     display: grid;
     align-items: start;
@@ -952,8 +1543,29 @@ fieldset legend {
     justify-self: start;
   }
   .manual-piece-primary-fields,
-  .manual-piece-dimensions {
+  .manual-piece-dimensions,
+  .piece-editor-primary-fields,
+  .piece-editor-dimensions {
     grid-template-columns: 1fr;
+  }
+  .piece-row-summary {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  .piece-row-summary .piece-edit-toggle {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+  .cutting-sheet header,
+  .cutting-input li,
+  .cutting-alternatives li {
+    display: grid;
+  }
+  .cutting-sheet header {
+    gap: 0.2rem;
+  }
+  .cutting-input li,
+  .cutting-alternatives li {
+    gap: 0.25rem;
   }
 }
 @media (min-width: 42rem) {
@@ -980,13 +1592,23 @@ fieldset legend {
   .measure-row {
     grid-template-columns: minmax(10rem, 0.38fr) 1fr;
   }
+  .catalogue-intro {
+    grid-template-columns: minmax(0, 1fr) minmax(18rem, 0.58fr);
+    align-items: end;
+  }
+  .catalogue-filters {
+    grid-template-columns: minmax(16rem, 1fr) minmax(11rem, 0.35fr) auto;
+    align-items: end;
+  }
 }
 @media (min-width: 68rem) {
   .topbar,
   .masthead,
   .journey,
   .workspace,
-  .drawing-page {
+  .drawing-page,
+  .catalogue-intro,
+  .catalogue-ledger {
     padding-left: max(3.5rem, env(safe-area-inset-left));
     padding-right: max(3.5rem, env(safe-area-inset-right));
   }

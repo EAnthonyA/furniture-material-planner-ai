@@ -4,6 +4,7 @@ import { prisma } from "@/lib/db/prisma";
 import {
   drawingExtractionSchema,
   manualObservedPieceSchema,
+  type ObservedPiece,
 } from "@/lib/domain/drawing-extraction";
 
 const routeParamsSchema = z.object({
@@ -20,6 +21,10 @@ const manualPieceFormSchema = z.object({
   heightMm: z.coerce.number().positive().multipleOf(0.1).nullable(),
 });
 
+const updatePieceFormSchema = manualPieceFormSchema.extend({
+  pieceIndex: z.coerce.number().int().min(0),
+});
+
 function optionalNumber(formData: FormData, name: string) {
   const value = formData.get(name);
   return typeof value === "string" && value.trim() ? value : null;
@@ -27,6 +32,76 @@ function optionalNumber(formData: FormData, name: string) {
 
 function analysisUrl(projectId: string, runId: string, request: Request) {
   return new URL(`/projects/${projectId}/analysis/${runId}`, request.url);
+}
+
+function pieceSubmissionFrom(formData: FormData) {
+  const submittedPiece = {
+    category: formData.get("category"),
+    label: formData.get("label"),
+    quantity: formData.get("quantity"),
+    lengthMm: optionalNumber(formData, "lengthMm"),
+    widthMm: optionalNumber(formData, "widthMm"),
+    heightMm: optionalNumber(formData, "heightMm"),
+  };
+  const isUpdate = formData.get("operation") === "update";
+  const parsedUpdate = isUpdate
+    ? updatePieceFormSchema.safeParse({
+        ...submittedPiece,
+        pieceIndex: formData.get("pieceIndex"),
+      })
+    : null;
+  const parsedPiece = isUpdate
+    ? parsedUpdate
+    : manualPieceFormSchema.safeParse(submittedPiece);
+  const parsedObservedPiece = parsedPiece?.success
+    ? manualObservedPieceSchema.safeParse(parsedPiece.data)
+    : null;
+
+  if (!parsedObservedPiece?.success) {
+    return null;
+  }
+
+  return {
+    isUpdate,
+    piece: parsedObservedPiece.data,
+    pieceIndex: parsedUpdate?.success ? parsedUpdate.data.pieceIndex : null,
+  };
+}
+
+function canSavePiece({
+  isUpdate,
+  pieceIndex,
+  pieces,
+}: {
+  isUpdate: boolean;
+  pieceIndex: number | null;
+  pieces: ObservedPiece[];
+}) {
+  if (!isUpdate) {
+    return pieces.length < 30;
+  }
+
+  return pieceIndex !== null && pieceIndex < pieces.length;
+}
+
+function updatedPieces({
+  isUpdate,
+  piece,
+  pieceIndex,
+  pieces,
+}: {
+  isUpdate: boolean;
+  piece: ObservedPiece;
+  pieceIndex: number | null;
+  pieces: ObservedPiece[];
+}) {
+  if (!isUpdate) {
+    return [...pieces, piece];
+  }
+
+  return pieces.map((existingPiece, index) =>
+    index === pieceIndex ? piece : existingPiece,
+  );
 }
 
 export async function POST(
@@ -41,19 +116,9 @@ export async function POST(
 
   const { projectId, runId } = routeParams.data;
   const formData = await request.formData();
-  const parsedForm = manualPieceFormSchema.safeParse({
-    category: formData.get("category"),
-    label: formData.get("label"),
-    quantity: formData.get("quantity"),
-    lengthMm: optionalNumber(formData, "lengthMm"),
-    widthMm: optionalNumber(formData, "widthMm"),
-    heightMm: optionalNumber(formData, "heightMm"),
-  });
-  const piece = parsedForm.success
-    ? manualObservedPieceSchema.safeParse(parsedForm.data)
-    : null;
+  const submission = pieceSubmissionFrom(formData);
 
-  if (!piece?.success) {
+  if (!submission) {
     const url = analysisUrl(projectId, runId, request);
     url.searchParams.set("manual", "invalid");
     return NextResponse.redirect(url, 303);
@@ -65,7 +130,14 @@ export async function POST(
   });
   const extraction = drawingExtractionSchema.safeParse(run?.output);
 
-  if (!extraction.success || extraction.data.observedPieces.length >= 30) {
+  if (
+    !extraction.success ||
+    !canSavePiece({
+      isUpdate: submission.isUpdate,
+      pieceIndex: submission.pieceIndex,
+      pieces: extraction.data.observedPieces,
+    })
+  ) {
     const url = analysisUrl(projectId, runId, request);
     url.searchParams.set("manual", "unavailable");
     return NextResponse.redirect(url, 303);
@@ -76,12 +148,17 @@ export async function POST(
     data: {
       output: {
         ...extraction.data,
-        observedPieces: [...extraction.data.observedPieces, piece.data],
+        observedPieces: updatedPieces({
+          isUpdate: submission.isUpdate,
+          piece: submission.piece,
+          pieceIndex: submission.pieceIndex,
+          pieces: extraction.data.observedPieces,
+        }),
       },
     },
   });
 
   const url = analysisUrl(projectId, runId, request);
-  url.searchParams.set("manual", "added");
+  url.searchParams.set("manual", submission.isUpdate ? "updated" : "added");
   return NextResponse.redirect(url, 303);
 }
