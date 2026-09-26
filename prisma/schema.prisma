@@ -1,0 +1,173 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ProjectState {
+  DRAFT
+  ANALYSIS_REVIEW
+  APPROVED
+  PLANNED
+}
+
+enum MaterialKind {
+  LMDP
+  SPRUCE_PANEL
+  BIRCH_PANEL
+  OTHER
+}
+
+enum ValueSource {
+  DRAWING
+  OWNER_INPUT
+  DERIVED
+  AI_PROPOSAL
+  MANUAL
+}
+
+enum JobStatus {
+  PENDING
+  RUNNING
+  COMPLETED
+  FAILED
+}
+
+enum Store {
+  SENUKAI
+  ERMITAZAS
+}
+
+enum ProductKind {
+  PANEL
+  EDGE_BANDING
+  HARDWARE
+  FASTENER
+  CONSUMABLE
+}
+
+enum SellingUnit {
+  PIECE
+  PACK
+  LINEAR_METER
+  SQUARE_METER
+  LITER
+}
+
+model User {
+  id        String    @id @default(cuid())
+  email     String    @unique
+  createdAt DateTime  @default(now())
+  projects  Project[]
+}
+
+model Project {
+  id               String               @id @default(cuid())
+  ownerId          String
+  owner            User                 @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  name             String
+  state            ProjectState         @default(DRAFT)
+  materialGroups   MaterialGroup[]
+  drawings         Drawing[]
+  revisions        RequirementsRevision[]
+  currentRevisionId String?              @unique
+  currentRevision  RequirementsRevision? @relation("CurrentRevision", fields: [currentRevisionId], references: [id])
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @updatedAt
+  @@index([ownerId, updatedAt])
+}
+
+model MaterialGroup {
+  id          String       @id @default(cuid())
+  projectId   String
+  project     Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  name        String
+  kind        MaterialKind
+  thicknessMm Decimal      @db.Decimal(8, 1)
+  species     String?
+  decor       String?
+  createdAt   DateTime     @default(now())
+  @@unique([projectId, name])
+}
+
+model Drawing {
+  id        String   @id @default(cuid())
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  objectKey String   @unique
+  mediaType String
+  widthPx   Int?
+  heightPx  Int?
+  createdAt DateTime @default(now())
+}
+
+model RequirementsRevision {
+  id          String    @id @default(cuid())
+  projectId   String
+  project     Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  revision    Int
+  snapshot    Json
+  approvedAt  DateTime?
+  createdAt   DateTime  @default(now())
+  currentFor  Project?  @relation("CurrentRevision")
+  plans       PurchasePlan[]
+  @@unique([projectId, revision])
+}
+
+model StoreProduct {
+  id            String      @id @default(cuid())
+  store         Store
+  externalId    String
+  variantId     String?
+  url           String
+  title         String
+  kind          ProductKind
+  dimensionsMm  Json?
+  material      MaterialKind?
+  species       String?
+  decor         String?
+  sellingUnit   SellingUnit
+  packContents  Decimal?
+  observations  ProductObservation[]
+  @@unique([store, externalId, variantId])
+}
+
+model ProductObservation {
+  id               String       @id @default(cuid())
+  productId        String
+  product          StoreProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+  priceCents       Int?
+  conditionalCents Int?
+  priceCondition   String?
+  availability     String?
+  observedAt       DateTime     @default(now())
+  sourceData       Json
+  @@index([productId, observedAt])
+}
+
+model PurchasePlan {
+  id         String               @id @default(cuid())
+  revisionId String
+  revision   RequirementsRevision @relation(fields: [revisionId], references: [id])
+  store      Store
+  settings   Json
+  snapshot   Json
+  complete   Boolean              @default(false)
+  createdAt  DateTime             @default(now())
+}
+
+model Job {
+  id             String    @id @default(cuid())
+  kind           String
+  idempotencyKey String    @unique
+  status         JobStatus @default(PENDING)
+  progress       Int       @default(0)
+  payload        Json
+  result         Json?
+  error          String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
