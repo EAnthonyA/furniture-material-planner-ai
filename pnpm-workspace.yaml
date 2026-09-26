@@ -1,6 +1,9 @@
 allowBuilds:
-  '@prisma/client': set this to true or false
-  '@prisma/engines': set this to true or false
-  esbuild: set this to true or false
-  prisma: set this to true or false
-  unrs-resolver: set this to true or false
+  "@prisma/client": false
+  "@prisma/engines": false
+  esbuild: false
+  prisma: false
+  unrs-resolver: false
+minimumReleaseAgeExclude:
+  - dotenv@18.0.4
+  - "@types/node@26.6.3"

@@ -1,10 +1,10 @@
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 enum ProjectState {
@@ -72,6 +72,7 @@ model Project {
   state            ProjectState         @default(DRAFT)
   materialGroups   MaterialGroup[]
   drawings         Drawing[]
+  analysisRuns     AnalysisRun[]
   revisions        RequirementsRevision[]
   currentRevisionId String?              @unique
   currentRevision  RequirementsRevision? @relation("CurrentRevision", fields: [currentRevisionId], references: [id])
@@ -102,6 +103,22 @@ model Drawing {
   widthPx   Int?
   heightPx  Int?
   createdAt DateTime @default(now())
+}
+
+model AnalysisRun {
+  id            String    @id @default(cuid())
+  projectId     String
+  project       Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  status        JobStatus @default(PENDING)
+  provider      String
+  model         String
+  promptVersion String
+  schemaVersion String
+  output        Json?
+  error         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  @@index([projectId, createdAt])
 }
 
 model RequirementsRevision {

@@ -5,7 +5,12 @@ import { createProjectInputSchema, millimetresSchema } from "./project";
 test("accepts a project with tenths-of-a-millimetre thickness", () => {
   const result = createProjectInputSchema.safeParse({
     name: "Prieškambario spintelė",
-    materialGroup: { name: "Korpusas", kind: "LMDP", thicknessMm: 18.0, decor: "Ąžuolas" },
+    materialGroup: {
+      name: "Korpusas",
+      kind: "LMDP",
+      thicknessMm: 18.0,
+      decor: "Ąžuolas",
+    },
   });
 
   assert.equal(result.success, true);

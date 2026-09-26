@@ -1,7 +1,17 @@
 import { z } from "zod";
 
-export const materialKindSchema = z.enum(["LMDP", "SPRUCE_PANEL", "BIRCH_PANEL", "OTHER"]);
-export const workflowStateSchema = z.enum(["DRAFT", "ANALYSIS_REVIEW", "APPROVED", "PLANNED"]);
+export const materialKindSchema = z.enum([
+  "LMDP",
+  "SPRUCE_PANEL",
+  "BIRCH_PANEL",
+  "OTHER",
+]);
+export const workflowStateSchema = z.enum([
+  "DRAFT",
+  "ANALYSIS_REVIEW",
+  "APPROVED",
+  "PLANNED",
+]);
 
 /** Millimetres are persisted in tenths to keep geometry exact in the solver. */
 export const millimetresSchema = z.number().finite().positive().multipleOf(0.1);

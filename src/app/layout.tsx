@@ -3,7 +3,8 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Dirbtuvės | Medžiagų planas",
-  description: "Furniture requirements, cutting layouts, and purchase planning.",
+  description:
+    "Furniture requirements, cutting layouts, and purchase planning.",
 };
 
 export const viewport: Viewport = {
@@ -13,7 +14,9 @@ export const viewport: Viewport = {
   themeColor: "#ece5d7",
 };
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default function RootLayout({
+  children,
+}: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="lt">
       <body>{children}</body>

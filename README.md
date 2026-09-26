@@ -1,6 +1,6 @@
 # Dirbtuvės — Furniture Material Planner
 
-An owner-only furniture planning application for turning hand drawings into reviewed requirements, cutting layouts, and store-specific purchase lists. The complete product plan is in [plan.md](./plan.md).
+An owner-only furniture planning application for turning hand drawings into reviewed requirements, cutting layouts, and store-specific purchase lists.
 
 ## Current slice
 
@@ -8,13 +8,13 @@ The repository now has a Next.js App Router foundation, responsive Lithuanian pr
 
 ## Run locally
 
-1. Copy `.env.example` to `.env` and edit values if needed.
-2. Start PostgreSQL: `docker compose up -d postgres`.
-3. Install dependencies: `pnpm install`.
-4. Start the application: `pnpm dev`.
-5. Open `http://localhost:3000`; health is available at `http://localhost:3000/api/health`.
+1. Copy `.env.example` to `.env` and add API values only when they are needed.
+2. Run `docker compose up --build`.
+3. Open `http://localhost:3000`; health is available at `http://localhost:3000/api/health`.
 
-Run `pnpm typecheck`, `pnpm test`, and `pnpm build` before merging changes. Prisma build scripts are initially blocked by pnpm's safety policy; approve only the Prisma packages before running `pnpm db:generate` or migrations.
+This one command launches `postgres`, runs pending Prisma migrations, then starts `web` (Next.js) and `worker` (background processing). Project files are kept in named Docker volumes, so stopping containers does not discard the database or private storage. Use `docker compose down` to stop the stack; use `docker compose down -v` only when you deliberately want to erase local data.
+
+Run `pnpm db:generate`, `pnpm typecheck`, `pnpm test`, and `pnpm build` before merging changes. Prisma Client is generated into `src/generated/prisma` and is intentionally not committed.
 
 ## Design direction
 
