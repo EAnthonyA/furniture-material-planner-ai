@@ -5,9 +5,11 @@ import { prisma } from "@/lib/db/prisma";
 import {
   calculateCuttingPlan,
   type CutRequirement,
+  type CuttingPlanResult as CuttingPlan,
   type StockBoard,
 } from "@/lib/domain/cutting-plan";
 import { drawingExtractionSchema } from "@/lib/domain/drawing-extraction";
+import { savedPurchasePlanSnapshotSchema } from "@/lib/domain/saved-purchase-plan";
 
 type ProductDimensions = {
   lengthMm: number;
@@ -74,7 +76,23 @@ export default async function CuttingPlanPage({
   const { projectId, runId } = await params;
   const run = await prisma.analysisRun.findFirst({
     where: { id: runId, projectId, status: "COMPLETED" },
-    include: { project: { include: { materialGroups: true } } },
+    include: {
+      project: {
+        include: {
+          materialGroups: true,
+          currentRevision: {
+            include: {
+              plans: {
+                where: { complete: true },
+                orderBy: { createdAt: "desc" },
+                take: 1,
+                select: { snapshot: true },
+              },
+            },
+          },
+        },
+      },
+    },
   });
 
   if (!run) {
@@ -88,46 +106,64 @@ export default async function CuttingPlanPage({
     notFound();
   }
 
-  const products = await prisma.storeProduct.findMany({
-    where: { store: "SENUKAI", material: material.kind },
-    select: {
-      id: true,
-      title: true,
-      url: true,
-      dimensionsMm: true,
-      observations: {
-        orderBy: { observedAt: "desc" },
-        take: 1,
-        select: { availability: true, priceCents: true },
-      },
-    },
-  });
-  const requiredThicknessMm = Number(material.thicknessMm);
-  const stock: StockBoard[] = products.flatMap((product) => {
-    const dimensions = product.dimensionsMm;
-    const observation = product.observations[0];
+  const savedSnapshot = savedPurchasePlanSnapshotSchema.safeParse(
+    run.project.currentRevision?.plans[0]?.snapshot,
+  );
+  const savedPlan =
+    savedSnapshot.success &&
+    savedSnapshot.data.runId === runId &&
+    savedSnapshot.data.result.ok
+      ? savedSnapshot.data
+      : null;
+  let requirements: CutRequirement[];
+  let result: CuttingPlan;
 
-    if (
-      !hasProductDimensions(dimensions) ||
-      observation?.availability !== "PARDUODAMA" ||
-      Math.abs(dimensions.thicknessMm - requiredThicknessMm) > 0.01
-    ) {
-      return [];
-    }
-
-    return [
-      {
-        id: product.id,
-        label: product.title,
-        lengthMm: dimensions.lengthMm,
-        widthMm: dimensions.widthMm,
-        priceCents: observation.priceCents,
-        url: product.url,
+  if (savedPlan) {
+    requirements = savedPlan.requirements;
+    result = savedPlan.result;
+  } else {
+    const products = await prisma.storeProduct.findMany({
+      where: { store: "SENUKAI", material: material.kind },
+      select: {
+        id: true,
+        title: true,
+        url: true,
+        dimensionsMm: true,
+        observations: {
+          orderBy: { observedAt: "desc" },
+          take: 1,
+          select: { availability: true, priceCents: true },
+        },
       },
-    ];
-  });
-  const requirements = requirementsFromExtraction(extraction.data);
-  const result = calculateCuttingPlan(requirements, stock);
+    });
+    const requiredThicknessMm = Number(material.thicknessMm);
+    const stock: StockBoard[] = products.flatMap((product) => {
+      const dimensions = product.dimensionsMm;
+      const observation = product.observations[0];
+
+      if (
+        !hasProductDimensions(dimensions) ||
+        observation?.availability !== "PARDUODAMA" ||
+        Math.abs(dimensions.thicknessMm - requiredThicknessMm) > 0.01
+      ) {
+        return [];
+      }
+
+      return [
+        {
+          id: product.id,
+          label: product.title,
+          lengthMm: dimensions.lengthMm,
+          widthMm: dimensions.widthMm,
+          priceCents: observation.priceCents,
+          url: product.url,
+        },
+      ];
+    });
+
+    requirements = requirementsFromExtraction(extraction.data);
+    result = calculateCuttingPlan(requirements, stock);
+  }
 
   return (
     <main className="cutting-plan-page">
@@ -148,6 +184,47 @@ export default async function CuttingPlanPage({
         parduodamomis, pasirinkto storio plokštėmis. Rekomendacija priimama tik
         tada, kai visos detalės turi vietą konkrečiose plokštėse.
       </p>
+      {result.ok ? (
+        savedPlan ? (
+          <section className="plan-save-confirmation" aria-live="polite">
+            <div>
+              <p className="eyebrow">Išsaugotas projektas</p>
+              <h2>Skaičiavimas jau paruoštas parduotuvei.</h2>
+              <p>
+                Šis pirkinių sąrašas ir pjovimo planas išsaugoti tokie, kokie
+                parodyti žemiau.
+              </p>
+            </div>
+            <Link href="/">
+              Peržiūrėti projektus <span aria-hidden="true">→</span>
+            </Link>
+          </section>
+        ) : (
+          <section
+            className="plan-save-callout"
+            aria-labelledby="save-plan-title"
+          >
+            <div>
+              <p className="eyebrow">Pabaikite projektą</p>
+              <h2 id="save-plan-title">
+                Išsaugokite prieš eidami į parduotuvę.
+              </h2>
+              <p>
+                Išsaugosime šį pirkinių sąrašą ir pjovimo planą, kad vėliau
+                galėtumėte juos atsidaryti iš projektų sąrašo.
+              </p>
+            </div>
+            <form
+              action={`/api/projects/${projectId}/analysis/${runId}/plan/save`}
+              method="post"
+            >
+              <button className="submit-button" type="submit">
+                Išsaugoti skaičiavimą <span aria-hidden="true">→</span>
+              </button>
+            </form>
+          </section>
+        )
+      ) : null}
       <CuttingPlanResult requirements={requirements} result={result} />
     </main>
   );

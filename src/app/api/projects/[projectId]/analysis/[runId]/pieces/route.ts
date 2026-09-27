@@ -143,19 +143,26 @@ export async function POST(
     return NextResponse.redirect(url, 303);
   }
 
-  await prisma.analysisRun.update({
-    where: { id: runId },
-    data: {
-      output: {
-        ...extraction.data,
-        observedPieces: updatedPieces({
-          isUpdate: submission.isUpdate,
-          piece: submission.piece,
-          pieceIndex: submission.pieceIndex,
-          pieces: extraction.data.observedPieces,
-        }),
+  await prisma.$transaction(async (transaction) => {
+    await transaction.analysisRun.update({
+      where: { id: runId },
+      data: {
+        output: {
+          ...extraction.data,
+          observedPieces: updatedPieces({
+            isUpdate: submission.isUpdate,
+            piece: submission.piece,
+            pieceIndex: submission.pieceIndex,
+            pieces: extraction.data.observedPieces,
+          }),
+        },
       },
-    },
+    });
+
+    await transaction.project.update({
+      where: { id: projectId },
+      data: { currentRevisionId: null, state: "ANALYSIS_REVIEW" },
+    });
   });
 
   const url = analysisUrl(projectId, runId, request);

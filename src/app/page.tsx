@@ -2,6 +2,7 @@ import Link from "next/link";
 import { DeleteProjectButton } from "@/components/delete-project-button";
 import { ProjectSetup } from "@/components/project-setup";
 import { prisma } from "@/lib/db/prisma";
+import { savedPurchasePlanSnapshotSchema } from "@/lib/domain/saved-purchase-plan";
 
 export const dynamic = "force-dynamic";
 
@@ -16,9 +17,22 @@ type SavedProject = {
   updatedAt: Date;
   _count: { drawings: number };
   analysisRuns: Array<{ id: string; status: string }>;
+  currentRevision: { plans: Array<{ snapshot: unknown }> } | null;
 };
 
 function getResumeDetails(project: SavedProject) {
+  const savedPlan = savedPurchasePlanSnapshotSchema.safeParse(
+    project.currentRevision?.plans[0]?.snapshot,
+  );
+
+  if (savedPlan.success && savedPlan.data.result.ok) {
+    return {
+      href: `/projects/${project.id}/analysis/${savedPlan.data.runId}/plan`,
+      step: "04 Pirkimas ir pjovimas",
+      description: "Pirkinių sąrašas ir pjovimo planas išsaugoti.",
+    };
+  }
+
   const latestRun = project.analysisRuns[0];
 
   if (!project._count.drawings) {
@@ -71,6 +85,16 @@ export default async function HomePage() {
             orderBy: { createdAt: "desc" },
             take: 1,
             select: { id: true, status: true },
+          },
+          currentRevision: {
+            select: {
+              plans: {
+                where: { complete: true },
+                orderBy: { createdAt: "desc" },
+                take: 1,
+                select: { snapshot: true },
+              },
+            },
           },
         },
       },
