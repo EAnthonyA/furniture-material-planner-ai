@@ -1319,6 +1319,48 @@ fieldset legend {
   font-size: 1.05rem;
   line-height: 1.7;
 }
+.plan-save-callout,
+.plan-save-confirmation {
+  display: grid;
+  gap: 1.5rem;
+  max-width: 64rem;
+  margin-bottom: clamp(2.5rem, 5vw, 4rem);
+  padding: clamp(1.25rem, 3vw, 2rem);
+  border: 1px solid var(--walnut);
+  background: color-mix(in oklch, var(--paper-deep), var(--walnut) 8%);
+}
+.plan-save-callout h2,
+.plan-save-confirmation h2 {
+  max-width: 20ch;
+  font-size: clamp(1.75rem, 3.6vw, 2.7rem);
+}
+.plan-save-callout p:last-child,
+.plan-save-confirmation p:last-child {
+  max-width: 49ch;
+  margin: 0.8rem 0 0;
+  color: var(--ink-soft);
+}
+.plan-save-callout form {
+  align-self: end;
+}
+.plan-save-callout .submit-button {
+  min-width: min(100%, 20rem);
+}
+.plan-save-confirmation {
+  border-color: color-mix(in oklch, var(--moss), var(--line) 55%);
+  background: color-mix(in oklch, var(--paper), var(--moss) 7%);
+}
+.plan-save-confirmation > a {
+  align-self: end;
+  min-height: 3.4rem;
+  padding: 0.8rem 0;
+  color: var(--moss);
+  font-weight: 700;
+}
+.plan-save-confirmation > a span {
+  margin-left: 0.35rem;
+  font-size: 1.25rem;
+}
 .purchase-recommendation {
   display: grid;
   grid-template-columns: auto auto minmax(0, 1fr);
@@ -1598,6 +1640,11 @@ fieldset legend {
   }
   .catalogue-filters {
     grid-template-columns: minmax(16rem, 1fr) minmax(11rem, 0.35fr) auto;
+    align-items: end;
+  }
+  .plan-save-callout,
+  .plan-save-confirmation {
+    grid-template-columns: minmax(0, 1fr) minmax(14rem, 0.55fr);
     align-items: end;
   }
 }
